@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basketball Practice Drills - Rank Your Favorites</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .intro {
+            background: #fff3cd;
+            border-left: 4px solid #ff6b35;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 5px;
+        }
+
+        .intro h2 {
+            color: #ff6b35;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .drill-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .drill-item {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: move;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .drill-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .drill-item.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
+        .drill-rank {
+            background: #3498db;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+
+        .drill-content {
+            flex: 1;
+        }
+
+        .drill-title {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .drill-description {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+
+        .drag-handle {
+            color: #999;
+            font-size: 1.5em;
+            cursor: grab;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .instructions {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+
+        .instructions strong {
+            color: #2c3e50;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-reset {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .basketball-emoji {
+            font-size: 1.5em;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏀 Basketball Practice Drills</h1>
+            <p>Rank Your Favorite Drills for Ages 7-8</p>
+        </div>
+
+        <div class="content">
+            <div class="intro">
+                <h2>Captain Forrester's Practice Games</h2>
+                <p><strong>Key Tip:</strong> Keep everything moving - 7-8 year olds have short attention spans. 3-5 minute rotations work well. The key is making skill development feel like play rather than drills!</p>
+            </div>
+
+            <div class="instructions">
+                <strong>📋 Instructions:</strong> Drag and drop the drills below to rank them in your preferred order (1 = most preferred). Then share your rankings via text or save them!
+            </div>
+
+            <div class="section">
+                <h3>Rank Your Practice Drills</h3>
+                <ul class="drill-list" id="drillList">
+                    <li class="drill-item" draggable="true" data-id="1">
+                        <span class="drill-rank">1</span>
+                        <div class="drill-content">
+                            <div class="drill-title">🏃 Dribble Tag</div>
+                            <div class="drill-description">One player is "it" and tries to tag others while everyone maintains their dribble. If you lose control of your ball, you're frozen until someone dribbles around you. Gets them comfortable dribbling with their head up.</div>
+                        </div>
+                        <span class="drag-handle">☰</span>
+                    </li>
+                    <li class="drill-item" draggable="true" data-id="2">
+                        <span class="drill-rank">2</span>
+                        <div class="drill-content">
+                            <div class="drill-title">🦈 Sharks and Minnows</div>
+                            <div class="drill-description">Players dribble from baseline to baseline while 1-2 "sharks" try to knock their ball away. If your ball gets knocked out, you become a shark. Last minnow wins.</div>
+                        </div>
+                        <span class="drag-handle">☰</span>
+                    </li>
+                    <li class="drill-item" draggable="true" data-id="3">
+                        <span class="drill-rank">3</span>
+                        <div class="drill-content">
+                            <div class="drill-title">🚦 Red Light, Green Light</div>
+                            <div class="drill-description">Classic game but with dribbling. You call out colors, they dribble on green and freeze on red. Add yellow for slow dribbling. Teaches control and listening.</div>
+                        </div>
+                        <span class="drag-handle">☰</span>
+                    </li>
+                    <li class="drill-item" draggable="true" data-id="4">
+                        <span class="drill-rank">4</span>
+                        <div class="drill-content">
+                            <div class="drill-title">🎯 Knockout</div>
+                            <div class="drill-description">Line up at free throw line (or closer for 7-8 year olds). First two players shoot. If the person behind you makes their shot before you make yours, you're out. Fast-paced and they love the competition.</div>
+                        </div>
+                        <span class="drag-handle">☰</span>
+                    </li>
+                    <li class="drill-item" draggable="true" data-id="5">
+                        <span class="drill-rank">5</span>
+                        <div class="drill-content">
+                            <div class="drill-title">🔥 Hot Potato Passing</div>
+                            <div class="drill-description">Circle up, music plays (or you count), they pass around the circle. When music stops, whoever has the ball does 5 jumping jacks or a silly dance. Keeps passing fun and quick.</div>
+                        </div>
+                        <span class="drag-handle">☰</span>
+                    </li>
+                    <li class="drill-item" draggable="true" data-id="6">
+                        <span class="drill-rank">6</span>
+                        <div class="drill-content">
+                            <div class="drill-title">🏁 Relay Races</div>
+                            <div class="drill-description">Dribbling relays, passing relays, shooting relays. Split into teams. Kids this age love the team competition aspect.</div>
+                        </div>
+                        <span class="drag-handle">☰</span>
+                    </li>
+                    <li class="drill-item" draggable="true" data-id="7">
+                        <span class="drill-rank">7</span>
+                        <div class="drill-content">
+                            <div class="drill-title">🎵 Musical Basketballs</div>
+                            <div class="drill-description">Like musical chairs. Everyone dribbles around, when you blow the whistle they find the nearest ball. Remove one ball each round.</div>
+                        </div>
+                        <span class="drag-handle">☰</span>
+                    </li>
+                    <li class="drill-item" draggable="true" data-id="8">
+                        <span class="drill-rank">8</span>
+                        <div class="drill-content">
+                            <div class="drill-title">🕺 Dribble Freeze Dance</div>
+                            <div class="drill-description">Play music, kids dribble. When music stops they freeze in a strong athletic stance with ball protected. Anyone who moves or loses their ball does a fun consequence.</div>
+                        </div>
+                        <span class="drag-handle">☰</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" id="shareBtn">
+                    📱 Share via Text
+                </button>
+                <button class="btn btn-success" id="copyBtn">
+                    📋 Copy Rankings
+                </button>
+                <button class="btn btn-reset" id="resetBtn">
+                    🔄 Reset Order
+                </button>
+            </div>
+
+            <div class="message" id="message"></div>
+        </div>
+    </div>
+
+    <script>
+        // Drag and Drop functionality
+        const drillList = document.getElementById('drillList');
+        const drillItems = drillList.querySelectorAll('.drill-item');
+        let draggedElement = null;
+
+        drillItems.forEach(item => {
+            item.addEventListener('dragstart', handleDragStart);
+            item.addEventListener('dragover', handleDragOver);
+            item.addEventListener('drop', handleDrop);
+            item.addEventListener('dragend', handleDragEnd);
+        });
+
+        function handleDragStart(e) {
+            draggedElement = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+
+            const afterElement = getDragAfterElement(drillList, e.clientY);
+            if (afterElement == null) {
+                drillList.appendChild(draggedElement);
+            } else {
+                drillList.insertBefore(draggedElement, afterElement);
+            }
+
+            updateRankNumbers();
+            return false;
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            return false;
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            updateRankNumbers();
+        }
+
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.drill-item:not(.dragging)')];
+
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        function updateRankNumbers() {
+            const items = drillList.querySelectorAll('.drill-item');
+            items.forEach((item, index) => {
+                const rankBadge = item.querySelector('.drill-rank');
+                rankBadge.textContent = index + 1;
+            });
+        }
+
+        function getRankingsText() {
+            const items = drillList.querySelectorAll('.drill-item');
+            let text = '🏀 MY BASKETBALL DRILL RANKINGS 🏀\n\n';
+
+            items.forEach((item, index) => {
+                const title = item.querySelector('.drill-title').textContent;
+                text += `${index + 1}. ${title}\n`;
+            });
+
+            text += '\n---\nFrom Captain Forrester\'s Practice Games for Ages 7-8\n';
+            text += 'Key: Make skill development feel like play!\n';
+            text += '3-5 minute rotations work best.\n\n';
+            text += 'Let\'s GrOw! 🚀';
+
+            return text;
+        }
+
+        // Share Button
+        document.getElementById('shareBtn').addEventListener('click', async () => {
+            const text = getRankingsText();
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Basketball Drill Rankings',
+                        text: text
+                    });
+                    showMessage('Rankings shared successfully!', 'success');
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        // Fallback to SMS
+                        window.location.href = `sms:?body=${encodeURIComponent(text)}`;
+                    }
+                }
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                window.location.href = `sms:?body=${encodeURIComponent(text)}`;
+            }
+        });
+
+        // Copy Button
+        document.getElementById('copyBtn').addEventListener('click', async () => {
+            const text = getRankingsText();
+
+            try {
+                await navigator.clipboard.writeText(text);
+                showMessage('Rankings copied to clipboard! You can now paste them anywhere.', 'success');
+            } catch (err) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-9999px';
+                document.body.appendChild(textArea);
+                textArea.select();
+
+                try {
+                    document.execCommand('copy');
+                    showMessage('Rankings copied to clipboard!', 'success');
+                } catch (err) {
+                    showMessage('Failed to copy. Please try the Share button instead.', 'error');
+                }
+
+                document.body.removeChild(textArea);
+            }
+        });
+
+        // Reset Button
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            location.reload();
+        });
+
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+
+            setTimeout(() => {
+                messageEl.className = 'message';
+            }, 5000);
+        }
+
+        // Initial rank update
+        updateRankNumbers();
+    </script>
+</body>
+</html>
